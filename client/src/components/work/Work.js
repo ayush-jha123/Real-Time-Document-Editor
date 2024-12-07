@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import queryString from 'query-string';
 import io from 'socket.io-client';
 import { useLocation } from 'react-router-dom';
-import './chat.css';
+import './work.css';
 
 let socket;
 
