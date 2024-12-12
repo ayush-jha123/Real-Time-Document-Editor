@@ -9,12 +9,13 @@ const server = http.createServer(app);
 
 const io = socketio(server, {
   cors: {
-    origin: 'https://real-time-document-editor.vercel.app', 
+    origin: 'https://real-time-document-editor.vercel.app',
     methods: ['GET', 'POST'],
   },
 });
 
-let notebookContent = ''; 
+// Store content for each room
+const roomContents = {};
 
 io.on('connection', (socket) => {
   socket.on('join', ({ name, room }, callback) => {
@@ -23,10 +24,15 @@ io.on('connection', (socket) => {
 
     socket.join(user.room);
 
-    
-    socket.emit('content', { content: notebookContent });
+    // Initialize content for the room if it doesn't exist
+    if (!roomContents[user.room]) {
+      roomContents[user.room] = ''; // Default to empty content for new rooms
+    }
 
-    
+    // Send the current room content to the newly joined user
+    socket.emit('content', { content: roomContents[user.room] });
+
+    // Notify other users in the room
     socket.broadcast.to(user.room).emit('message', {
       user: 'admin',
       text: `${user.name} has joined the room.`,
@@ -35,10 +41,15 @@ io.on('connection', (socket) => {
     callback();
   });
 
-  
   socket.on('updateContent', ({ content }) => {
-    notebookContent = content; 
-    io.to(getUser(socket.id).room).emit('content', { content: notebookContent }); 
+    const user = getUser(socket.id);
+    if (user) {
+      // Update the room's content
+      roomContents[user.room] = content;
+
+      // Broadcast the updated content to all users in the room
+      io.to(user.room).emit('content', { content: roomContents[user.room] });
+    }
   });
 
   socket.on('disconnect', () => {
@@ -48,6 +59,11 @@ io.on('connection', (socket) => {
         user: 'admin',
         text: `${user.name} has left.`,
       });
+
+      // Optionally, clean up room content if the room becomes empty
+      if (getUsersInRoom(user.room).length === 0) {
+        delete roomContents[user.room];
+      }
     }
   });
 });
