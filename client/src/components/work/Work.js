@@ -11,7 +11,7 @@ const Work = () => {
   const [room, setRoom] = useState('');
   const [content, setContent] = useState(''); // Notebook content
   const location = useLocation();
-  const ENDPOINT = 'http://localhost:5000';
+  const ENDPOINT = 'https://real-time-document-editor-u1fr.onrender.com';
 
   // Join the room
   useEffect(() => {
