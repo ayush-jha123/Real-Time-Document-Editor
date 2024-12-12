@@ -11,7 +11,7 @@ const Join = () => {
         <h1 className='heading'>Join</h1>
         <div><input placeholder='Name' className='joinInput' type='text' onChange={e=>setName(e.target.value)}/></div>
         <div><input placeholder='Room' className='joinInput mt-20' type='text' onChange={e=>setRoom(e.target.value)}/></div>
-        <Link onClick={event=>(!name || !room)? event.preventDefault():null} to={`/chat?name=${name}&room=${room}`}>
+        <Link onClick={event=>(!name || !room)? event.preventDefault():null} to={`/work?name=${name}&room=${room}`}>
           <button className='button mt-20'>Sign In</button>
         </Link>
       </div>
